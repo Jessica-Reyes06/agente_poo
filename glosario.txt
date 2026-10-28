@@ -1,0 +1,18 @@
+TÉRMINOS ACEPTADOS
+- clase
+- atributo
+- modificador de acceso / visibilidad: pública, privada, protegida (o público, privado, protegido)
+- tipo de dato: entero, decimal, cadena o string, booleano, carácter
+
+TÉRMINOS RECHAZADOS (término incorrecto -> término esperado)
+- variable -> atributo
+- función -> método
+- class -> clase
+- public -> pública / público
+- private -> privada / privado
+- protected -> protegida / protegido
+- int -> entero
+- double -> decimal
+- texto -> cadena / string
+- boolean -> booleano
+- char -> carácter

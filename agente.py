@@ -62,7 +62,7 @@ ETAPAS = {
     "sin ayuda": "Solo el código, nada más.",
 }
 
-ultimo_ejercicio={"codigo":"","ayuda":""}
+ultimo_ejercicio={"codigo":"","extra":""}
 
 @tool
 def generar_ejercicio(actividad:int,etapa:str )->str:
@@ -89,7 +89,7 @@ def generar_ejercicio(actividad:int,etapa:str )->str:
     """
 
     codigo = llm.invoke(prompt).text
-    ayuda=""
+    extra=""
     if etapa != "sin ayuda":
         prompt=f"""
         Código Java:
@@ -99,11 +99,11 @@ def generar_ejercicio(actividad:int,etapa:str )->str:
         Usa solo los términos aceptados de este glosario:
         {GLOSARIO}
         """
-        ayuda = llm.invoke(prompt).text.strip()
+        extra = llm.invoke(prompt).text.strip()
 
 
     ultimo_ejercicio["codigo"] = codigo
-    ultimo_ejercicio["ayuda"] = ayuda
+    ultimo_ejercicio["extra"] = extra
     ejercicios_previos.append(codigo)
     return codigo
 
@@ -178,14 +178,14 @@ def pedir_ejercicio(actividad: int, etapa: str) -> str:
     prompt_servidor = f"Dame un ejercicio para la actividad {actividad} en la etapa {etapa}"
     respuesta = agente.invoke({"messages": [HumanMessage(content=prompt_servidor)]})
     codigo = ultimo_ejercicio["codigo"]
-    ayuda = ultimo_ejercicio["ayuda"]
+    extra = ultimo_ejercicio["extra"]
     print(f"Agente: {respuesta['messages'][-1].content}")
     print("Código")
     print(codigo)
-    if ayuda:
+    if extra:
         print("\nAgente:")
-        print(ayuda)
-    return codigo
+        print(extra)
+    return {"codigo": codigo, "extra": extra}
 
 
 def pedir_retroalimentacion(codigo: str, explicacion: str) -> str:
@@ -194,5 +194,3 @@ def pedir_retroalimentacion(codigo: str, explicacion: str) -> str:
     texto = respuesta["messages"][-1].content
     print(f"Agente: {texto}")
     return texto
-
-

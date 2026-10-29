@@ -45,8 +45,19 @@ ETAPAS = {
     "La explicación sigue este formato: " + FORMATO_EXPLICACION
     ),
     "con pistas": (
-        "Después del código, escribe 'Pistas:' y 2 o 3 preguntas cortas sobre lo que se ve en el código "
-        "(por ejemplo: ¿qué modificador de acceso tiene la clase?). No des las respuestas."
+        "Después del código, escribe 'Pistas:' y debajo EXACTAMENTE 3 pistas en forma de lista, "
+        "cada una en su propia línea empezando con '- '.\n"
+        "Cada pista es un fragmento corto (máximo 6 palabras) con UN SOLO dato del código. "
+        "Nunca juntes dos datos en la misma pista. No escribas oraciones completas ni la explicación completa.\n"
+        "Si la clase no tiene atributos, las 3 pistas son sobre la clase, por ejemplo:\n"
+        "- Clase vacía.\n"
+        "- Modificador de acceso: pública.\n"
+        "- Nombre de la clase: Gato.\n"
+        "Si la clase tiene atributos, elige UNO solo de los atributos y da las 3 pistas sobre él, por ejemplo:\n"
+        "- Atributo: nombre.\n"
+        "- Tipo de dato: cadena.\n"
+        "- Modificador de acceso: privado.\n"
+        "Los ejemplos son solo de referencia: usa los datos reales del código."
     ),
     "sin ayuda": "Solo el código, nada más.",
 }
@@ -84,7 +95,7 @@ def generar_ejercicio(actividad:int,etapa:str )->str:
         Código Java:
         {codigo}
         {ETAPAS[etapa]}
-        Responde ÚNICAMENTE con eso, sin saludos ni titulos.
+        Responde ÚNICAMENTE con eso, sin saludos ni otros títulos.
         Usa solo los términos aceptados de este glosario:
         {GLOSARIO}
         """
@@ -163,28 +174,25 @@ agente = create_agent(
     )
 
 
-"""while True:
-    pregunta = input("Usuario: ")
-    if pregunta.lower()=="salir":
-        break
-    historial.append(HumanMessage(content=pregunta))
-    respuesta = agente.invoke({"messages": historial})
-    historial= respuesta["messages"]
-    texto = ""
-    for mensaje in reversed(respuesta["messages"]):     
-        if isinstance(mensaje, AIMessage):
-            contenido = mensaje.content
-            if isinstance(contenido, list):
-                for b in contenido:
-                    if b.get("type")== "text":     #comprobar si la clave type tiene el valor text
-                            texto += b.get("text", "")
-            else:
-                texto = contenido
-            break
-    if not texto.strip():
-        texto = "No hubo respuesta del modelo. Intente nuevamente"
-    if "FIN_SESION" in texto:
-        print(f"Agente: {texto.replace('FIN_SESION', '').strip()}")
-        break
-    print(f"Agente: {texto}")"""
+def pedir_ejercicio(actividad: int, etapa: str) -> str:
+    prompt_servidor = f"Dame un ejercicio para la actividad {actividad} en la etapa {etapa}"
+    respuesta = agente.invoke({"messages": [HumanMessage(content=prompt_servidor)]})
+    codigo = ultimo_ejercicio["codigo"]
+    ayuda = ultimo_ejercicio["ayuda"]
+    print(f"Agente: {respuesta['messages'][-1].content}")
+    print("Código")
+    print(codigo)
+    if ayuda:
+        print("\nAgente:")
+        print(ayuda)
+    return codigo
+
+
+def pedir_retroalimentacion(codigo: str, explicacion: str) -> str:
+    prompt = "Dame la retroalimentación para el usuario con el código: " + codigo + " y la explicación: " + explicacion
+    respuesta = agente.invoke({"messages": [HumanMessage(content=prompt)]})
+    texto = respuesta["messages"][-1].content
+    print(f"Agente: {texto}")
+    return texto
+
 
